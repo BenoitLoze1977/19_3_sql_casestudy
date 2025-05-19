@@ -1,0 +1,14 @@
+name: 19_3_sql_casestudy
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - typer
+  - loguru
+  - tqdm
+  - ruff
+  - pip:
+    - python-dotenv
+    - mkdocs
+    - -e .

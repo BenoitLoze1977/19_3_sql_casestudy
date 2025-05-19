@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "19_3_sql_casestudy"
+version = "0.0.1"
+description = "Springboard Section 19.3 SQL Case Study"
+authors = [
+  { name = "Benoit Loze" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+requires-python = "~=3.12.0"
+
+
+[tool.ruff]
+line-length = 99
+src = ["19_3_sql_casestudy"]
+include = ["pyproject.toml", "19_3_sql_casestudy/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["19_3_sql_casestudy"]
+force-sort-within-sections = true
+
