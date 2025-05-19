@@ -131,7 +131,7 @@ WHERE (starttime >= '2012-09-14' AND starttime < '2012-09-15')
     ((b.memid = 0 AND f.guestcost * b.slots > 30)  
     OR 
     (b.memid <> 0 AND f.membercost * b.slots > 30))
-ORDER BY total_cost DESC
+ORDER BY total_cost DESC;
 
 
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
@@ -160,7 +160,7 @@ WHERE
     AND
     sub.total_cost > 30 -- WHERE clause processed AFTER FROM clause!
 ORDER BY
-	sub.total_cost DESC
+	sub.total_cost DESC;
 
 /* PART 2: SQLite
 
@@ -171,12 +171,59 @@ QUESTIONS:
 /* Q10: Produce a list of facilities with a total revenue less than 1000.
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
+SELECT
+	sub.facility_name,
+    SUM(total_cost) AS total_revenue
+FROM (
+	SELECT
+		f.name AS facility_name,
+		CASE
+			WHEN b.memid = 0
+			THEN f.guestcost * b.slots
+			ELSE f.membercost * b.slots
+		END AS total_cost
+	FROM Bookings AS b
+	INNER JOIN Facilities AS f
+	ON b.facid = f.facid
+	INNER JOIN Members AS m
+	ON b.memid = m.memid
+    ) AS sub
+GROUP BY sub.facility_name
+HAVING total_revenue < 1000
+ORDER BY total_revenue;
 
 /* Q11: Produce a report of members and who recommended them in alphabetic surname,firstname order */
-
+SELECT
+    CONCAT_WS(', ', m1.surname, m1.firstname) AS member,
+    CONCAT_WS(', ', m2.surname, m2.firstname) AS recommended_by
+FROM Members AS m1
+JOIN Members AS m2
+ON m1.recommendedby = m2.memid
+ORDER by member;
 
 /* Q12: Find the facilities with their usage by member, but not guests */
-
+SELECT
+	f.name AS facility_name,
+    COUNT(*) AS member_usage_count
+FROM Bookings AS b
+INNER JOIN Facilities AS f
+ON b.facid = f.facid
+INNER JOIN Members AS m
+ON b.memid = m.memid
+WHERE b.memid <> 0
+GROUP BY f.name
+ORDER BY member_usage_count DESC;
 
 /* Q13: Find the facilities usage by month, but not guests */
-
+SELECT
+	f.name AS facility_name,
+    DATE_FORMAT(b.starttime, '%Y-%m') AS month,
+    COUNT(*) AS member_usage_count
+FROM Bookings AS b
+INNER JOIN Facilities AS f
+ON b.facid = f.facid
+INNER JOIN Members AS m
+ON b.memid = m.memid
+WHERE b.memid <> 0
+GROUP BY f.name, DATE_FORMAT(b.starttime, '%Y-%m')
+ORDER BY month DESC, member_usage_count DESC;
